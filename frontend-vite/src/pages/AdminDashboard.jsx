@@ -108,31 +108,38 @@
 
 // export default AdminDashboard;
 
+// 
 import Sidebar from "../components/admin/Sidebar";
 import DashboardCard from "../components/admin/DashboardCard";
-
+import { Link } from "react-router-dom";
 
 export default function AdminDashboard() {
   return (
-    <div className="flex h-screen bg-gray-50">
+    <div className="flex h-screen bg-gray-100">
       <Sidebar />
-      
-      <div className="flex-1 p-6 overflow-y-auto">
-        <h1 className="text-2xl font-bold mb-6">Admin Dashboard</h1>
-        
-        {/* Cards Section */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <DashboardCard title="Total Bookings" value="1,250" />
-          <DashboardCard title="Available Ambulances" value="24" />
-          <DashboardCard title="Pending Feedbacks" value="13" />
+
+      <div className="flex-1 p-8 overflow-y-auto ml-64">
+        {/* Header Section */}
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-3xl font-bold text-gray-800">ResQGo Admin</h1>
+          <Link to="/admin/add-organization">
+            <button className="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg shadow">
+              + Add Organization
+            </button>
+          </Link>
         </div>
 
-        {/* Add tables/charts here */}
-        <div className="mt-10">
-          <h2 className="text-xl font-semibold mb-4">Recent Bookings</h2>
-          <div className="bg-white p-4 rounded-lg shadow-md">
-            <p className="text-gray-500">Booking table coming soon...</p>
-          </div>
+        {/* Cards Section */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+          <DashboardCard title="Total Bookings" value="1,250" valueColor="text-red-600" />
+          <DashboardCard title="Available Ambulances" value="24" valueColor="text-green-600" />
+          <DashboardCard title="Pending Feedbacks" value="13" valueColor="text-yellow-500" />
+        </div>
+
+        {/* Booking Table Placeholder */}
+        <div className="bg-white p-6 rounded-lg shadow-md">
+          <h2 className="text-2xl font-semibold mb-4 text-gray-700">Recent Bookings</h2>
+          <p className="text-gray-500">Booking table coming soon...</p>
         </div>
       </div>
     </div>
