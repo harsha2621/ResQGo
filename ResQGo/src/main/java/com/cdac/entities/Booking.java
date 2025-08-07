@@ -2,6 +2,8 @@ package com.cdac.entities;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -27,21 +29,25 @@ import lombok.Setter;
 @AllArgsConstructor
 public class Booking extends BaseEntity {
 
+	 @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false,
                 foreignKey = @ForeignKey(name = "fk_booking_user"))
     private User user;
 
+	 @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ambulance_id", nullable = false,
                 foreignKey = @ForeignKey(name = "fk_booking_ambulance"))
     private Ambulance ambulance;
 
+	 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "pickup_location_id", nullable = false,
                 foreignKey = @ForeignKey(name = "fk_booking_pickup"))
     private Location pickupLocation;
 
+	
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "drop_location_id", nullable = false,
                 foreignKey = @ForeignKey(name = "fk_booking_drop"))
@@ -55,12 +61,12 @@ public class Booking extends BaseEntity {
     @Column(name = "emergency_type", nullable = false, length = 30)
     private EmergencyType emergencyType;
 
+    @JsonIgnore
     @OneToOne(mappedBy = "booking", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Bill bill;
 
-    @OneToOne(mappedBy = "booking", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private Feedback feedback;
-
+   
+    @JsonIgnore
     @OneToMany(mappedBy = "booking", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<TripStatusUpdate> statusUpdates;
 }

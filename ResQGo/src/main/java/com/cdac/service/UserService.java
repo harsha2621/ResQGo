@@ -18,6 +18,8 @@ public interface UserService {
 	    UserRespDTO getUser(Long id);
 	    
 	    List<UserRespDTO> getAllUsers();
+
+	    UserRespDTO getUserByEmail(String email);
 	
 
 }

@@ -45,7 +45,7 @@ public class BookingServiceImpl implements BookingService {
         Location pickupLocation = locationDao.findById(request.getPickupLocationId())
                 .orElseThrow(() -> new ResourceNotFoundException("Pickup location not found"));
 
-        Location dropLocation = locationDao.findById(request.getDropoffLocationId())
+        Location dropLocation = locationDao.findById(request.getDropLocationId())
                 .orElseThrow(() -> new ResourceNotFoundException("Dropoff location not found"));
 
         boolean exists = bookingDao.existsByUserAndAmbulanceAndPickupLocationAndDropLocation(
@@ -65,6 +65,9 @@ public class BookingServiceImpl implements BookingService {
 
         Booking savedBooking = bookingDao.save(booking);
 
+
+     // 👇 ADDED THIS LINE to force lazy loading
+     savedBooking.getDropLocation().getId(); 
         return modelMapper.map(savedBooking, BookingRespDTO.class);
     }
 
@@ -82,7 +85,7 @@ public class BookingServiceImpl implements BookingService {
         Location pickupLocation = locationDao.findById(request.getPickupLocationId())
                 .orElseThrow(() -> new ResourceNotFoundException("Pickup location not found"));
 
-        Location dropLocation = locationDao.findById(request.getDropoffLocationId())
+        Location dropLocation = locationDao.findById(request.getDropLocationId())
                 .orElseThrow(() -> new ResourceNotFoundException("Dropoff location not found"));
 
         booking.setUser(user);
@@ -111,8 +114,7 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public List<BookingRespDTO> getAllBookingsForAdmin(Long adminUserId) {
-        // Assuming adminUserId is used to filter bookings by organization or role, 
-        // if not, just return all bookings.
+        
 
         List<Booking> bookings = bookingDao.findAll(); // Or filter based on adminUserId if needed
 

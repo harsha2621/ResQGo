@@ -19,7 +19,6 @@ public class UserRespDTO {
 
     private String aadhaarNumber;
 
-    private String licenseNumber;
 
     private String contactNumber;
 

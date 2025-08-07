@@ -16,7 +16,7 @@ import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 
 @RestController
-@RequestMapping("/api/locations")
+@RequestMapping("/locations")
 @AllArgsConstructor
 @Validated
 public class LocationController {

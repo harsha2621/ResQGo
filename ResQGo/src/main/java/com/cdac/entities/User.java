@@ -56,12 +56,14 @@ public class User extends BaseEntity {
     @JoinColumn(name = "organization_id",nullable = false, foreignKey = @ForeignKey(name = "fk_user_organization"))
     private Organization organization;
     
+   
+    
+    @JsonIgnore
     @OneToMany(mappedBy = "user", orphanRemoval = true, cascade = CascadeType.ALL)
+    
     private List<Booking> bookings;
 
-    @OneToMany(mappedBy = "user", orphanRemoval = true, cascade = CascadeType.ALL)
-    private List<Feedback> feedbacks;
-    
+   
 
     
 }

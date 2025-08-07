@@ -38,8 +38,9 @@ public class BillServiceImpl implements BillService {
         bill.setPaid(dto.isPaid());
         bill.setPaymentDate(dto.getPaymentDate());
 
-        return modelMapper.map(billDao.save(bill), BillRespDTO.class);
+        return modelMapper.map(billDao.save(bill), BillRespDTO.class); // ✅ ModelMapper handles all
     }
+
 
     @Override
     public BillRespDTO updateBill(Long id, BillReqDTO dto) {

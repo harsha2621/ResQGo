@@ -14,6 +14,15 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
+@AllArgsConstructor
+
+
 @Configuration
 @EnableMethodSecurity
 public class SecurityConfiguration {
@@ -21,17 +30,13 @@ public class SecurityConfiguration {
     private final JwtAuthenticationFilter jwtAuthFilter;
     private final CustomUserDetailsService userDetailsService;
 
-    public SecurityConfiguration(JwtAuthenticationFilter jwtAuthFilter,
-                          CustomUserDetailsService userDetailsService) {
-        this.jwtAuthFilter = jwtAuthFilter;
-        this.userDetailsService = userDetailsService;
-    }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
             .csrf(csrf -> csrf.disable())
-            .cors(cors -> cors.disable()) // or properly enable later
+            .cors(cors -> {})
+           
             .authorizeHttpRequests(auth -> auth
                 // Allow Swagger
                 .requestMatchers(
@@ -40,19 +45,16 @@ public class SecurityConfiguration {
                 ).permitAll()
 
                 // Allow login
-                .requestMatchers("/api/auth/**").permitAll()
+                .requestMatchers("/auth/**").permitAll()
 
                 // Allow creating first organization/user
-                .requestMatchers("/api/organization/**").permitAll()
-                .requestMatchers("/api/users/**").permitAll()
+                .requestMatchers("/organization/**").permitAll()
+                
 
                 // Allow feedback creation (public)
-                .requestMatchers("/api/feedback/**").permitAll()
+                .requestMatchers("/feedbacks/**").permitAll()
 
-                // Role-based access
-                .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                .requestMatchers("/api/user/**").hasRole("USER")
-                .requestMatchers("/api/driver/**").hasRole("DRIVER")
+                .requestMatchers("/users/**").permitAll()
 
                 .anyRequest().authenticated()
             )

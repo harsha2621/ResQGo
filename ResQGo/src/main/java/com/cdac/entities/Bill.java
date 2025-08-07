@@ -2,6 +2,8 @@ package com.cdac.entities;
 
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -22,6 +24,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class Bill extends BaseEntity {
 
+	
 	@OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "booking_id", nullable = false, unique = true,
                 foreignKey = @ForeignKey(name = "fk_bill_booking"))

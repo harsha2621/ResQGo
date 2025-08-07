@@ -20,7 +20,7 @@ import io.jsonwebtoken.security.Keys;
 @Component
 public class JwtUtil {
 
-    private final String SECRET_KEY = "secretkeymustbeatleast256bitlongforsafety123456"; // Min 256-bit
+    private final String SECRET_KEY = "secretkeymustbeatleast256bitlongforsafety123456"; // Minimum 256-bit
 
     private final long EXPIRATION = 1000 * 60 * 60 * 10; // 10 hours
 
@@ -68,29 +68,27 @@ public class JwtUtil {
   
 
     public void authenticateUserFromToken(String token) {
-        // JWT token se claims nikaalo
+        
         Claims claims = Jwts.parserBuilder()
                 .setSigningKey(getSigningKey())
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
 
-        // Username nikaalo
         String username = claims.getSubject();
 
-        // Roles nikaalo claim "roles" se
+        
         List<String> roles = claims.get("roles", List.class);
 
-        // Roles ko GrantedAuthority me convert karo
         List<SimpleGrantedAuthority> authorities = roles.stream()
                 .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toList());
 
-        // Authentication token banao
+      
         UsernamePasswordAuthenticationToken authToken =
                 new UsernamePasswordAuthenticationToken(username, null, authorities);
 
-        // Security context me set karo
+
         SecurityContextHolder.getContext().setAuthentication(authToken);
     }
 

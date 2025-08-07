@@ -19,7 +19,7 @@ public class BookingReqDTO {
     private Long pickupLocationId;
 
     @NotNull(message = "Dropoff location ID is required")
-    private Long dropoffLocationId;
+    private Long dropLocationId;
 
     @NotNull(message = "Emergency type is required")
     private EmergencyType emergencyType; 

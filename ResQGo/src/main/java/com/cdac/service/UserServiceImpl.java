@@ -29,17 +29,16 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserRespDTO addUser(UserReqDTO dto) {
-        // Step 1: Validate that the organization exists
+        
         Organization org = organizationDao.findById(dto.getOraganizationId())
             .orElseThrow(() -> new ResourceNotFoundException("Organization not found"));
 
-        // Step 2: Map DTO to User
         User user = modelMapper.map(dto, User.class);
 
-        // Step 3: Manually set the organization
+        
         user.setOrganization(org);
 
-        // Step 4: Save and map to response DTO
+        
         return modelMapper.map(userDao.save(user), UserRespDTO.class);
     }
 
@@ -73,4 +72,12 @@ public class UserServiceImpl implements UserService {
 		List<User> users = userDao.findAll();
         return users.stream().map(user -> modelMapper.map(user, UserRespDTO.class)).collect(Collectors.toList());
 	}
+	
+	@Override
+	public UserRespDTO getUserByEmail(String email) {
+	    User user = userDao.findByEmail(email)
+	        .orElseThrow(() -> new RuntimeException("User not found"));
+	    return modelMapper.map(user, UserRespDTO.class); // assuming you have a mapper
+	}
+
 }

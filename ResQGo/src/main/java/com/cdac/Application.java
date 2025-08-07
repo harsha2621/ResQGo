@@ -14,22 +14,5 @@ public class Application {
 		SpringApplication.run(Application.class, args);
 	}
 
-	@Bean
-	public ModelMapper modelMapper() {
-		System.out.println("in model mapper creation");
-		ModelMapper mapper = new ModelMapper();
-		mapper.getConfiguration()
-				/*
-				 * To tell ModelMapper to map only those props whose names match in src n dest.
-				 * objects
-				 */
-				.setMatchingStrategy(MatchingStrategies.STRICT)
-				/*
-				 * To tell ModelMapper not to transfer nulls from src -> dest
-				 */
-				.setPropertyCondition(Conditions.isNotNull());// use case - PUT
-		return mapper;
-
-	}
 
 }

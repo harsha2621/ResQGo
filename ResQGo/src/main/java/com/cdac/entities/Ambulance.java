@@ -1,5 +1,7 @@
 package com.cdac.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -34,18 +36,22 @@ public class Ambulance extends BaseEntity {
     @Column(nullable = false, length = 15)
     private AmbulanceStatus status;  // AVAILABLE, BUSY, MAINTENANCE
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "location_id", nullable = false,
                 foreignKey = @ForeignKey(name = "fk_ambulance_location"))
     private Location currentLocation;
 
+    @JsonIgnore
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "driver_id", nullable = false,
                 foreignKey = @ForeignKey(name = "fk_ambulance_driver"))
     private User driver;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "organization_id", nullable = false,
                 foreignKey = @ForeignKey(name = "fk_ambulance_org"))
+   
     private Organization organization;
 }

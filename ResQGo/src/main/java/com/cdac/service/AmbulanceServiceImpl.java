@@ -46,17 +46,16 @@ public class AmbulanceServiceImpl implements AmbulanceService {
         ambulance.setType(dto.getType());
         ambulance.setStatus(dto.getStatus());
 
-        // ✅ Fetch and assign location
+       
         Location location = locationDao.findById(dto.getLocationId())
                 .orElseThrow(() -> new ResourceNotFoundException("Location not found"));
         ambulance.setCurrentLocation(location);
 
-        // ✅ Fetch and assign driver
         User driver = userDao.findById(dto.getDriverId())
                 .orElseThrow(() -> new ResourceNotFoundException("Driver not found"));
         ambulance.setDriver(driver);
 
-        // ✅ Fetch and assign organization (assuming only 1)
+       
         Organization org = organizationDao.findAll().stream().findFirst()
                 .orElseThrow(() -> new ResourceNotFoundException("Organization not found"));
         ambulance.setOrganization(org);

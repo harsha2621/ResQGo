@@ -284,7 +284,6 @@ const RegisterForm = () => {
     confirmPassword: '',
     aadhaarNumber: '',
     organizationId: '',
-    role: '',
   });
 
   const [showPassword, setShowPassword] = useState(false);
@@ -424,20 +423,6 @@ const RegisterForm = () => {
           </div>
         </div>
 
-        <label style={styles.label}>User Role</label>
-        <select
-          name="role"
-          value={formData.role}
-          onChange={handleChange}
-          required
-          style={styles.input}
-        >
-          <option value="">Select Role</option>
-          <option value="ADMIN">Admin</option>
-          <option value="DRIVER">Driver</option>
-          <option value="USER">User</option>
-        </select>
-
         <button type="submit" style={styles.button}>
           Create Account
         </button>
@@ -546,5 +531,3 @@ const styles = {
 };
 
 export default RegisterForm;
-
-

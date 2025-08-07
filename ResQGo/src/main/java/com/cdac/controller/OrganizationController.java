@@ -13,7 +13,7 @@ import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 
 @RestController
-@RequestMapping("/api/organization")
+@RequestMapping("/organization")
 @AllArgsConstructor
 @Validated
 public class OrganizationController {

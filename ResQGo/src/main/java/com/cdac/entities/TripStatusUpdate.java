@@ -2,6 +2,8 @@ package com.cdac.entities;
 
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -24,6 +26,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class TripStatusUpdate extends BaseEntity {
 
+    @JsonIgnore
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "booking_id", nullable = false,
 	                foreignKey = @ForeignKey(name = "fk_tripstatus_booking"))

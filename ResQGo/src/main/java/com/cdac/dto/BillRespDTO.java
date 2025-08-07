@@ -15,7 +15,8 @@ public class BillRespDTO {
 
     private Long id;
     private Long bookingId;
-  
+    private Double amount;
+    private boolean paid;
     private LocalDateTime paymentDate;
     
 }

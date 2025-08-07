@@ -14,8 +14,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cdac.dao.UserDao;
 import com.cdac.dto.UserReqDTO;
 import com.cdac.dto.UserRespDTO;
+import com.cdac.entities.User;
 import com.cdac.service.UserService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -23,12 +25,13 @@ import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/users")
 @AllArgsConstructor
 @Validated
 public class UserController {
 
     private final UserService userService;
+    private final UserDao userDao;
 
     @PostMapping
     @Operation(summary = "Add new user")
@@ -58,4 +61,14 @@ public class UserController {
     public List<UserRespDTO> getAllUsers() {
         return userService.getAllUsers();
     }
+    
+    @GetMapping("/by-email/{email}")
+    public ResponseEntity<User> getUserByEmail(@PathVariable String email) {
+        return ResponseEntity.ok(
+            userDao.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"))
+        );
+    }
+
+
 }

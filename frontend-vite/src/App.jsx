@@ -7,6 +7,7 @@ import AdminDashboard from "./pages/AdminDashboard";
 import OrganizationForm from "./pages/OrganizationForm";
 import AmbulanceForm from "./pages/AmbulanceForm";
 import UserForm from './pages/UserForm';
+import UserDashboard from "./pages/UserDashboard";
 
 
 
@@ -23,6 +24,7 @@ function App() {
         <Route path="/admin/add-organization" element={<OrganizationForm />} />
         <Route path="/admin/manage-ambulance" element={<AmbulanceForm />} />
         <Route path="/admin/users" element={<UserForm />} />
+         <Route path="/dashboard" element={<UserDashboard />} />
         
        
       </Routes>
