@@ -67,8 +67,8 @@ public class FeedbackServiceImpl implements FeedbackService {
         System.out.println("UserId from booking: " + booking.getUserId());
 
         Feedback feedback = modelMapper.map(feedbackDto, Feedback.class);
-        feedback.setBookingId(bookingId);
-        feedback.setUserId(booking.getUserId());
+//        feedback.setBookingId(bookingId);
+//        feedback.setUserId(booking.getUserId());
 
         Feedback savedFeedback = feedbackDao.save(feedback);
 
@@ -76,11 +76,22 @@ public class FeedbackServiceImpl implements FeedbackService {
     }
 
     @Override
-    public FeedbackResponseDTO getFeedbackByBooking(Long bookingId) {
-        Feedback feedback = feedbackDao.findByBookingId(bookingId)
-            .orElseThrow(() -> new ResourceNotFoundException("Feedback not found for booking id: " + bookingId));
+    public FeedbackResponseDTO getFeedbackById(Long id) {
+        Feedback feedback = feedbackDao.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Feedback not found with id: " + id));
 
         return modelMapper.map(feedback, FeedbackResponseDTO.class);
+    }
+    
+    @Override
+    public FeedbackResponseDTO createFeedback(FeedbackRequestDTO feedbackDto) {
+        Feedback feedback = new Feedback();
+        feedback.setComments(feedbackDto.getComments());
+        feedback.setRating(feedbackDto.getRating());
+        
+        Feedback savedFeedback = feedbackDao.save(feedback);
+        
+        return modelMapper.map(savedFeedback, FeedbackResponseDTO.class);
     }
 
 	

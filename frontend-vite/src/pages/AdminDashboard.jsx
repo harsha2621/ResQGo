@@ -112,34 +112,60 @@
 import Sidebar from "../components/admin/Sidebar";
 import DashboardCard from "../components/admin/DashboardCard";
 import { Link } from "react-router-dom";
+import { Calendar, Truck, MessageSquare, TrendingUp, Users, Phone, Activity, Clock } from "lucide-react";
 
 export default function AdminDashboard() {
   return (
-    <div className="flex h-screen bg-gray-100">
+    <div className="flex h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       <Sidebar />
 
-      <div className="flex-1 p-8 overflow-y-auto ml-64">
+      <div className="flex-1 p-8 overflow-y-auto ml-64 transition-all duration-300">
         {/* Header Section */}
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-800">ResQGo Admin</h1>
-          <Link to="/admin/add-organization">
-            <button className="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg shadow">
-              + Add Organization
+          <div>
+            <h1 className="text-3xl font-bold text-gray-800">Dashboard Overview</h1>
+            <p className="text-gray-600 mt-1">Welcome back, Admin! Here's what's happening today.</p>
+          </div>
+          <div className="flex gap-3">
+            <button 
+              onClick={() => {
+                localStorage.removeItem('token');
+                localStorage.removeItem('user');
+                window.location.href = '/login';
+              }}
+              className="bg-red-600 hover:bg-red-700 text-white px-6 py-2.5 rounded-lg shadow-lg transition-all duration-200 flex items-center gap-2"
+            >
+              Logout
             </button>
-          </Link>
+          </div>
         </div>
 
-        {/* Cards Section */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-          <DashboardCard title="Total Bookings" value="1,250" valueColor="text-red-600" />
-          <DashboardCard title="Available Ambulances" value="24" valueColor="text-green-600" />
-          <DashboardCard title="Pending Feedbacks" value="13" valueColor="text-yellow-500" />
-        </div>
-
-        {/* Booking Table Placeholder */}
-        <div className="bg-white p-6 rounded-lg shadow-md">
-          <h2 className="text-2xl font-semibold mb-4 text-gray-700">Recent Bookings</h2>
-          <p className="text-gray-500">Booking table coming soon...</p>
+        {/* Stats Cards Section */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <DashboardCard 
+            title="Total Bookings" 
+            value="1,250" 
+            valueColor="text-red-600" 
+            icon={<Calendar className="text-red-600" size={24} />}
+          />
+          <DashboardCard 
+            title="Active Ambulances" 
+            value="24" 
+            valueColor="text-green-600"
+            icon={<Truck className="text-green-600" size={24} />}
+          />
+          <DashboardCard 
+            title="Total Users" 
+            value="3,421" 
+            valueColor="text-blue-600"
+            icon={<Users className="text-blue-600" size={24} />}
+          />
+          <DashboardCard 
+            title="Response Time" 
+            value="8.5 min" 
+            valueColor="text-purple-600"
+            icon={<Clock className="text-purple-600" size={24} />}
+          />
         </div>
       </div>
     </div>

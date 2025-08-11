@@ -22,12 +22,6 @@ public class Feedback {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Column(name = "booking_id", nullable = false)
-    private Long bookingId; 
-
-    @Column(name = "user_id", nullable = false)
-    private Long userId;  
     
     @Column(length = 1000)
     private String comments;

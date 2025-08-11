@@ -19,7 +19,7 @@
 
 //   const fetchUsers = async () => {
 //     try {
-//       const res = await axios.get("http://localhost:8080/api/user/all");
+//       const res = await axios.get("http://localhost:8080/api/user");
 //       setUsers(res.data);
 //     } catch (err) {
 //       console.error("Failed to fetch users", err);
@@ -122,6 +122,7 @@
 // }
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import AdminLayout from "../components/layout/AdminLayout";
 
 export default function UserForm() {
   const [users, setUsers] = useState([]);
@@ -141,7 +142,12 @@ export default function UserForm() {
 
   const fetchUsers = async () => {
     try {
-      const res = await axios.get("http://localhost:8080/api/user/all");
+      const token = localStorage.getItem('token');
+      const res = await axios.get("http://localhost:8080/api/user", {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
       setUsers(res.data);
     } catch (err) {
       console.error("Failed to fetch users", err);
@@ -155,7 +161,12 @@ export default function UserForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.put(`http://localhost:8080/api/user/${editingId}`, userData);
+      const token = localStorage.getItem('token');
+      await axios.put(`http://localhost:8080/api/user/${editingId}`, userData, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
       alert("✅ User updated");
       setUserData({ fullName: "", email: "", password: "", contactNo: "", role: "USER" });
       setEditingId(null);
@@ -179,17 +190,25 @@ export default function UserForm() {
   const handleDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete this user?")) {
       try {
-        await axios.delete(`http://localhost:8080/api/user/${id}`);
+        const token = localStorage.getItem('token');
+        await axios.delete(`http://localhost:8080/api/user/${id}`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
         fetchUsers();
       } catch (err) {
         console.error("Delete failed", err);
+        const errorMessage = err.response?.data?.message || "Failed to delete user";
+        alert(`❌ ${errorMessage}`);
       }
     }
   };
 
   return (
-    <div className="max-w-5xl mx-auto mt-10 p-4">
-      {editingId && (
+    <AdminLayout>
+      <div className="max-w-5xl mx-auto p-4">
+        {editingId && (
         <>
           <h2 className="text-2xl font-bold mb-4">Update User</h2>
           <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
@@ -223,9 +242,9 @@ export default function UserForm() {
         <tbody>
           {users.map((u) => (
             <tr key={u.id} className="border-t">
-              <td className="p-2 border">{u.fullName}</td>
+              <td className="p-2 border">{u.name}</td>
               <td className="p-2 border">{u.email}</td>
-              <td className="p-2 border">{u.contactNo}</td>
+              <td className="p-2 border">{u.contactNumber}</td>
               <td className="p-2 border">{u.role}</td>
               <td className="p-2 border flex gap-2">
                 <button onClick={() => handleEdit(u)} className="bg-yellow-500 text-white px-2 py-1 rounded">Edit</button>
@@ -241,5 +260,6 @@ export default function UserForm() {
         </tbody>
       </table>
     </div>
+    </AdminLayout>
   );
 }

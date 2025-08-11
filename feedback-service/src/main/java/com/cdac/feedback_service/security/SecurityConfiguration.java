@@ -35,17 +35,11 @@ public class SecurityConfiguration  {
         .cors(cors -> {})
         
         .authorizeHttpRequests(auth -> auth
-   
-        		.requestMatchers(
-        				
-        				"/auth/login","/users/**","/authenticate","/swagger-ui/**", "/swagger-resources/**",
-                        "/v3/api-docs/**", "/swagger-ui.html","/webjars/**"
-                    ).permitAll()
-        		.requestMatchers("/feedbacks/feedbacks/**").authenticated() 
-
-);
-//        .anyRequest().authenticated()
-        http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
+        		.anyRequest().permitAll()
+        );
+        
+        // Remove JWT filter since we're not using authentication
+        // http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

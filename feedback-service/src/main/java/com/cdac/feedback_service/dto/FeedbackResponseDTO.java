@@ -12,8 +12,6 @@ import lombok.Setter;
 public class FeedbackResponseDTO {
 
     private Long id;
-    private Long userId;
-    private Long bookingId; 
     private String comments;
     private Integer rating;
 }

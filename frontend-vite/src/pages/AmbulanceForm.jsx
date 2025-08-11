@@ -1,30 +1,60 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import AdminLayout from "../components/layout/AdminLayout";
+
+// Configure axios defaults
+const api = axios.create({
+  baseURL: 'http://localhost:8080',
+  headers: {
+    'Content-Type': 'application/json',
+  }
+});
+
+// Add auth token to requests
+api.interceptors.request.use(
+  config => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  error => Promise.reject(error)
+);
 
 export default function AmbulanceForm() {
   const [ambulanceData, setAmbulanceData] = useState({
-    vehicleNumber: "",
-    driverName: "",
-    contactNumber: "",
-    location: "",
+    ambulanceNumber: "",
+    type: "",
     status: "",
-    organizationId: "",
+    driverId: "",
   });
 
   const [editingId, setEditingId] = useState(null);
   const [ambulances, setAmbulances] = useState([]);
+  const [drivers, setDrivers] = useState([]);
 
-  // Load ambulances on component mount
+  // Load ambulances and drivers on component mount
   useEffect(() => {
     fetchAmbulances();
+    fetchDrivers();
   }, []);
 
   const fetchAmbulances = async () => {
     try {
-      const res = await axios.get("http://localhost:8080/api/ambulance/all");
+      const res = await api.get("/ambulances");
       setAmbulances(res.data);
     } catch (err) {
       console.error("Failed to fetch ambulances", err);
+    }
+  };
+
+  const fetchDrivers = async () => {
+    try {
+      const res = await api.get("/api/user?role=DRIVER");
+      setDrivers(res.data);
+    } catch (err) {
+      console.error("Failed to fetch drivers", err);
     }
   };
 
@@ -36,43 +66,44 @@ export default function AmbulanceForm() {
     e.preventDefault();
 
     const payload = {
-      ...ambulanceData,
-      organizationId: ambulanceData.organizationId.trim() === "" ? null : ambulanceData.organizationId,
+      ambulanceNumber: ambulanceData.ambulanceNumber,
+      type: ambulanceData.type,
+      status: ambulanceData.status,
+      driverId: parseInt(ambulanceData.driverId),
+      // Don't send latitude/longitude - that's driver's responsibility
     };
 
     try {
       if (editingId) {
-        await axios.put(`http://localhost:8080/api/ambulance/${editingId}`, payload);
+        await api.put(`/ambulances/${editingId}`, payload);
         alert("✅ Ambulance updated successfully!");
       } else {
-        await axios.post("http://localhost:8080/api/ambulance/add", payload);
+        await api.post("/ambulances", payload);
         alert("✅ Ambulance added successfully!");
       }
 
       setAmbulanceData({
-        vehicleNumber: "",
-        driverName: "",
-        contactNumber: "",
-        location: "",
+        ambulanceNumber: "",
+        type: "",
         status: "",
-        organizationId: "",
+        driverId: "",
       });
       setEditingId(null);
       fetchAmbulances();
     } catch (err) {
       console.error("Error saving ambulance", err);
-      alert("❌ Failed to save ambulance");
+      console.error("Error response:", err.response);
+      const errorMessage = err.response?.data?.message || "Failed to save ambulance";
+      alert(`❌ ${errorMessage}`);
     }
   };
 
   const handleEdit = (amb) => {
     setAmbulanceData({
-      vehicleNumber: amb.vehicleNumber,
-      driverName: amb.driverName,
-      contactNumber: amb.contactNumber,
-      location: amb.location,
+      ambulanceNumber: amb.ambulanceNumber,
+      type: amb.type,
       status: amb.status,
-      organizationId: amb.organization?.id || "",
+      driverId: amb.driver?.id || "",
     });
     setEditingId(amb.id);
   };
@@ -80,7 +111,7 @@ export default function AmbulanceForm() {
   const handleDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete this ambulance?")) {
       try {
-        await axios.delete(`http://localhost:8080/api/ambulance/${id}`);
+        await api.delete(`/ambulances/${id}`);
         alert("✅ Deleted successfully");
         fetchAmbulances();
       } catch (err) {
@@ -93,58 +124,55 @@ export default function AmbulanceForm() {
   const handleCancelEdit = () => {
     setEditingId(null);
     setAmbulanceData({
-      vehicleNumber: "",
-      driverName: "",
-      contactNumber: "",
-      location: "",
+      ambulanceNumber: "",
+      type: "",
       status: "",
-      organizationId: "",
+      driverId: "",
     });
   };
 
   return (
-    <div className="max-w-5xl mx-auto mt-10 p-6">
-      <h2 className="text-2xl font-bold mb-4">
-        {editingId ? "Update Ambulance" : "Add Ambulance"}
-      </h2>
+    <AdminLayout>
+      <div className="max-w-5xl mx-auto p-6">
+        <h2 className="text-2xl font-bold mb-4">
+          {editingId ? "Update Ambulance" : "Add Ambulance"}
+        </h2>
 
       <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-10">
         <input
           type="text"
-          name="vehicleNumber"
-          placeholder="Vehicle Number"
-          value={ambulanceData.vehicleNumber}
+          name="ambulanceNumber"
+          placeholder="Ambulance Number"
+          value={ambulanceData.ambulanceNumber}
           onChange={handleChange}
           required
           className="p-2 border rounded"
         />
-        <input
-          type="text"
-          name="driverName"
-          placeholder="Driver Name"
-          value={ambulanceData.driverName}
+        <select
+          name="type"
+          value={ambulanceData.type}
           onChange={handleChange}
           required
           className="p-2 border rounded"
-        />
-        <input
-          type="text"
-          name="contactNumber"
-          placeholder="Contact Number"
-          value={ambulanceData.contactNumber}
+        >
+          <option value="">Select Type</option>
+          <option value="BASIC">Basic</option>
+          <option value="ICU">ICU</option>
+        </select>
+        <select
+          name="driverId"
+          value={ambulanceData.driverId}
           onChange={handleChange}
           required
           className="p-2 border rounded"
-        />
-        <input
-          type="text"
-          name="location"
-          placeholder="Location"
-          value={ambulanceData.location}
-          onChange={handleChange}
-          required
-          className="p-2 border rounded"
-        />
+        >
+          <option value="">Select Driver</option>
+          {drivers.map(driver => (
+            <option key={driver.id} value={driver.id}>
+              {driver.name} - {driver.email}
+            </option>
+          ))}
+        </select>
         <select
           name="status"
           value={ambulanceData.status}
@@ -154,17 +182,9 @@ export default function AmbulanceForm() {
         >
           <option value="">Select Status</option>
           <option value="AVAILABLE">Available</option>
-          <option value="ON_TRIP">On Trip</option>
+          <option value="BUSY">Busy</option>
           <option value="MAINTENANCE">Maintenance</option>
         </select>
-        <input
-          type="number"
-          name="organizationId"
-          placeholder="Organization ID"
-          value={ambulanceData.organizationId}
-          onChange={handleChange}
-          className="p-2 border rounded"
-        />
 
         <div className="col-span-2 flex gap-4 mt-2">
           <button
@@ -190,9 +210,9 @@ export default function AmbulanceForm() {
         <table className="w-full bg-white rounded shadow text-left">
           <thead className="bg-gray-100">
             <tr>
-              <th className="p-3 border">Vehicle No</th>
+              <th className="p-3 border">Ambulance No</th>
+              <th className="p-3 border">Type</th>
               <th className="p-3 border">Driver</th>
-              <th className="p-3 border">Contact</th>
               <th className="p-3 border">Location</th>
               <th className="p-3 border">Status</th>
               <th className="p-3 border">Organization</th>
@@ -202,10 +222,10 @@ export default function AmbulanceForm() {
           <tbody>
             {ambulances.map((amb) => (
               <tr key={amb.id} className="border-t">
-                <td className="p-3 border">{amb.vehicleNumber}</td>
-                <td className="p-3 border">{amb.driverName}</td>
-                <td className="p-3 border">{amb.contactNumber}</td>
-                <td className="p-3 border">{amb.location}</td>
+                <td className="p-3 border">{amb.ambulanceNumber}</td>
+                <td className="p-3 border">{amb.type}</td>
+                <td className="p-3 border">{amb.driver?.name || "—"}</td>
+                <td className="p-3 border">{amb.currentLocation?.name || "—"}</td>
                 <td className="p-3 border">{amb.status}</td>
                 <td className="p-3 border">{amb.organization?.orgName || "—"}</td>
                 <td className="p-3 border flex gap-2">
@@ -235,5 +255,6 @@ export default function AmbulanceForm() {
         </table>
       </div>
     </div>
+    </AdminLayout>
   );
 }

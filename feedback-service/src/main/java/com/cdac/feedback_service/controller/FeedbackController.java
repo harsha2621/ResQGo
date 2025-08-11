@@ -14,9 +14,9 @@ import com.cdac.feedback_service.service.FeedbackService;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RequestHeader;
+import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/feedbacks")
 @RequiredArgsConstructor
 public class FeedbackController {
 
@@ -35,11 +35,17 @@ public class FeedbackController {
         return ResponseEntity.ok(response);
     }
 
-
-
-    @GetMapping("/booking/{bookingId}")
-    public ResponseEntity<FeedbackResponseDTO> getFeedbackByBooking(@PathVariable Long bookingId) {
-        FeedbackResponseDTO feedback = feedbackService.getFeedbackByBooking(bookingId);
+    @GetMapping("/feedback/{id}")
+    public ResponseEntity<FeedbackResponseDTO> getFeedbackById(@PathVariable Long id) {
+        FeedbackResponseDTO feedback = feedbackService.getFeedbackById(id);
         return ResponseEntity.ok(feedback);
+    }
+    
+    @PostMapping("/feedback")
+    public ResponseEntity<FeedbackResponseDTO> createFeedback(
+        @Valid @RequestBody FeedbackRequestDTO feedbackRequestDTO
+    ) {
+        FeedbackResponseDTO response = feedbackService.createFeedback(feedbackRequestDTO);
+        return ResponseEntity.ok(response);
     }
 }

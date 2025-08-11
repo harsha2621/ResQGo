@@ -6,5 +6,6 @@ import com.cdac.feedback_service.dto.FeedbackResponseDTO;
 
 public interface FeedbackService {
 	FeedbackResponseDTO addFeedback(Long bookingId, FeedbackRequestDTO feedback, String jwtToken);
-    FeedbackResponseDTO getFeedbackByBooking(Long bookingId);
+    FeedbackResponseDTO getFeedbackById(Long id);
+    FeedbackResponseDTO createFeedback(FeedbackRequestDTO feedbackDto);
 }

@@ -8,6 +8,10 @@ import OrganizationForm from "./pages/OrganizationForm";
 import AmbulanceForm from "./pages/AmbulanceForm";
 import UserForm from './pages/UserForm';
 import UserDashboard from "./pages/UserDashboard";
+import DriverRegisterForm from "./pages/DriverRegisterForm";
+import DriverDashboard from "./pages/DriverDashboard";
+import BookingForm from "./pages/BookingForm";
+import AdminBookings from "./pages/AdminBookings";
 
 
 
@@ -19,12 +23,16 @@ function App() {
         <Route path="/" element={<Dashboard />} />
         <Route path="/login" element={<LoginForm />} />
         <Route path="/register" element={<RegisterForm />} />
+        <Route path="/driver/register" element={<DriverRegisterForm />} />
+        <Route path="/driver/dashboard" element={<DriverDashboard />} />
         <Route path="/admin/dashboard" element={<AdminDashboard />} />
         {/* New Route for Add Organization */}
         <Route path="/admin/add-organization" element={<OrganizationForm />} />
         <Route path="/admin/manage-ambulance" element={<AmbulanceForm />} />
         <Route path="/admin/users" element={<UserForm />} />
+        <Route path="/admin/bookings" element={<AdminBookings />} />
          <Route path="/dashboard" element={<UserDashboard />} />
+         <Route path="/booking/new" element={<BookingForm />} />
         
        
       </Routes>

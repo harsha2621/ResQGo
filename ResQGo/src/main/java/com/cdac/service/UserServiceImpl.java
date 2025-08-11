@@ -1,0 +1,108 @@
+package com.cdac.service;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.modelmapper.ModelMapper;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.cdac.dao.AmbulanceDao;
+import com.cdac.dao.OrganizationDao;
+import com.cdac.dao.UserDao;
+import com.cdac.dto.ApiResponse;
+import com.cdac.dto.UserReqDTO;
+import com.cdac.dto.UserRespDTO;
+import com.cdac.entities.Organization;
+import com.cdac.entities.User;
+import com.cdac.entities.UserRole;
+import com.cdac.exception.ResourceNotFoundException;
+
+import lombok.AllArgsConstructor;
+
+@Service
+@Transactional
+@AllArgsConstructor
+public class UserServiceImpl implements UserService {
+
+    private final UserDao userDao;
+    private final ModelMapper modelMapper;
+    private final OrganizationDao organizationDao;
+    private final AmbulanceDao ambulanceDao;
+
+    @Override
+    public UserRespDTO addUser(UserReqDTO dto) {
+        
+        Organization org = organizationDao.findById(dto.getOraganizationId())
+            .orElseThrow(() -> new ResourceNotFoundException("Organization not found"));
+
+        User user = modelMapper.map(dto, User.class);
+
+        // Ensure ID is null for new entity
+        user.setId(null);
+        user.setOrganization(org);
+
+        
+        return modelMapper.map(userDao.save(user), UserRespDTO.class);
+    }
+
+
+    @Override
+    public UserRespDTO updateUser(Long id, UserReqDTO dto) {
+        User user = userDao.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("User not found with ID " + id));
+        
+        modelMapper.map(dto, user);
+        return modelMapper.map(userDao.save(user), UserRespDTO.class);
+    }
+
+    @Override
+    public ApiResponse deleteUser(Long id) {
+        User user = userDao.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("User not found with ID " + id));
+        
+        // Check if the user is a driver assigned to any ambulance
+        if (user.getRole() == UserRole.DRIVER) {
+            boolean isAssignedToAmbulance = ambulanceDao.existsByDriverId(id);
+            if (isAssignedToAmbulance) {
+                throw new IllegalStateException(
+                    "Cannot delete driver '" + user.getName() + 
+                    "' as they are currently assigned to an ambulance. " +
+                    "Please reassign the ambulance to another driver first."
+                );
+            }
+        }
+        
+        userDao.delete(user);
+        return new ApiResponse("User deleted successfully!") ;
+    }
+
+    @Override
+    public UserRespDTO getUser(Long id) {
+        User user = userDao.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("User not found with ID " + id));
+        return modelMapper.map(user, UserRespDTO.class);
+    }
+
+	@Override
+	public List<UserRespDTO> getAllUsers() {
+		List<User> users = userDao.findAll();
+        return users.stream().map(user -> modelMapper.map(user, UserRespDTO.class)).collect(Collectors.toList());
+	}
+	
+	@Override
+	public UserRespDTO getUserByEmail(String email) {
+	    User user = userDao.findByEmail(email)
+	        .orElseThrow(() -> new RuntimeException("User not found"));
+	    return modelMapper.map(user, UserRespDTO.class); // assuming you have a mapper
+	}
+	
+	@Override
+	public List<UserRespDTO> getUsersByRole(String role) {
+	    List<User> users = userDao.findByRole(UserRole.valueOf(role));
+	    return users.stream()
+	        .map(user -> modelMapper.map(user, UserRespDTO.class))
+	        .collect(Collectors.toList());
+	}
+
+}

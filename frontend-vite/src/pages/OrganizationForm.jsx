@@ -98,6 +98,7 @@
 // }
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import AdminLayout from "../components/layout/AdminLayout";
 
 export default function OrganizationForm() {
   const [orgData, setOrgData] = useState({
@@ -215,7 +216,8 @@ const [selectedUserId, setSelectedUserId] = useState("");//added
   };
 
   return (
-    <div className="max-w-5xl mx-auto mt-10 p-6">
+    <AdminLayout>
+      <div className="max-w-5xl mx-auto p-6">
       <h2 className="text-2xl font-bold mb-4">
         {editingId ? "Update Organization" : "Add Organization"}
       </h2>
@@ -379,5 +381,6 @@ const [selectedUserId, setSelectedUserId] = useState("");//added
 
       </div>
     </div>
+    </AdminLayout>
   );
 }

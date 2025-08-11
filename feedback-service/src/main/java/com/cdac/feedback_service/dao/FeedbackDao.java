@@ -11,11 +11,5 @@ import com.cdac.feedback_service.entity.Feedback;
 
 @Repository
 public interface FeedbackDao extends JpaRepository<Feedback, Long> {
-
-    Optional<Feedback> findByBookingId(Long bookingId);
-
-
-    
-    boolean existsByBookingId(Long bookingId);
-
+    // Methods related to bookingId removed since entity no longer has bookingId
 }
