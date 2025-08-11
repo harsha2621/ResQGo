@@ -49,7 +49,7 @@ const LoginForm = () => {
         } else if (data.role === 'DRIVER') {
           window.location.href = '/driver/dashboard';  // Driver dashboard
         } else if (data.role === 'USER') {
-          window.location.href = '/dashboard';  // User dashboard
+          window.location.href = '/user/dashboard';  // User dashboard
         } else {
           window.location.href = '/';
         }

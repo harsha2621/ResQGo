@@ -106,6 +106,9 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public BookingRespDTO updateBooking(Long bookingId, BookingReqDTO request) {
+        System.out.println("Updating booking with ID: " + bookingId);
+        System.out.println("Update request data: " + request);
+        
         Booking booking = bookingDao.findById(bookingId)
                 .orElseThrow(() -> new ResourceNotFoundException("Booking not found with ID " + bookingId));
 
@@ -129,27 +132,32 @@ public class BookingServiceImpl implements BookingService {
         booking.setEmergencyType(request.getEmergencyType());
 
         Booking updatedBooking = bookingDao.save(booking);
+        System.out.println("Booking updated successfully. New status: " + updatedBooking.getBookingStatus());
 
         return modelMapper.map(updatedBooking, BookingRespDTO.class);
     }
 
     @Override
     public BookingRespDTO cancelBooking(Long bookingId) {
+        System.out.println("Cancelling booking with ID: " + bookingId);
+        
         Booking booking = bookingDao.findById(bookingId)
                 .orElseThrow(() -> new ResourceNotFoundException("Booking not found with ID " + bookingId));
 
         booking.setBookingStatus(BookingStatus.CANCELLED);
 
         Booking cancelledBooking = bookingDao.save(booking);
+        System.out.println("Booking cancelled successfully for booking ID: " + bookingId);
 
         return modelMapper.map(cancelledBooking, BookingRespDTO.class);
     }
 
     @Override
     public List<BookingRespDTO> getAllBookingsForAdmin(Long adminUserId) {
-        
+        System.out.println("Fetching all bookings for admin user ID: " + adminUserId);
 
         List<Booking> bookings = bookingDao.findAll(); // Or filter based on adminUserId if needed
+        System.out.println("Found " + bookings.size() + " total bookings");
 
         return bookings.stream()
                 .map(booking -> modelMapper.map(booking, BookingRespDTO.class))
@@ -158,7 +166,10 @@ public class BookingServiceImpl implements BookingService {
     
     @Override
     public List<BookingRespDTO> getBookingsByUserId(Long userId) {
+        System.out.println("Fetching bookings for user ID: " + userId);
+        
         List<Booking> bookings = bookingDao.findByUserId(userId);
+        System.out.println("Found " + bookings.size() + " bookings for user ID: " + userId);
         
         return bookings.stream()
                 .map(booking -> modelMapper.map(booking, BookingRespDTO.class))
@@ -167,8 +178,11 @@ public class BookingServiceImpl implements BookingService {
     
     @Override
     public List<BookingRespDTO> getBookingsByDriverId(Long driverId) {
+        System.out.println("Fetching bookings for driver ID: " + driverId);
+        
         // Find ambulances assigned to this driver
         List<Ambulance> driverAmbulances = ambulanceDao.findByDriverId(driverId);
+        System.out.println("Driver " + driverId + " has " + driverAmbulances.size() + " ambulances assigned");
         
         if (driverAmbulances.isEmpty()) {
             return new ArrayList<>();
@@ -177,8 +191,11 @@ public class BookingServiceImpl implements BookingService {
         // Get bookings for all driver's ambulances
         List<Booking> bookings = new ArrayList<>();
         for (Ambulance ambulance : driverAmbulances) {
-            bookings.addAll(bookingDao.findByAmbulanceId(ambulance.getId()));
+            List<Booking> ambulanceBookings = bookingDao.findByAmbulanceId(ambulance.getId());
+            System.out.println("Ambulance " + ambulance.getAmbulanceNumber() + " has " + ambulanceBookings.size() + " bookings");
+            bookings.addAll(ambulanceBookings);
         }
+        System.out.println("Total bookings for driver " + driverId + ": " + bookings.size());
         
         return bookings.stream()
                 .map(booking -> modelMapper.map(booking, BookingRespDTO.class))
@@ -187,8 +204,11 @@ public class BookingServiceImpl implements BookingService {
     
     @Override
     public BookingRespDTO updateBookingStatus(Long bookingId, String status) {
+        System.out.println("Updating booking status - Booking ID: " + bookingId + ", New Status: " + status);
+        
         Booking booking = bookingDao.findById(bookingId)
                 .orElseThrow(() -> new ResourceNotFoundException("Booking not found with ID " + bookingId));
+        System.out.println("Current booking status: " + booking.getBookingStatus());
         
         // Convert string status to enum
         BookingStatus bookingStatus = BookingStatus.valueOf(status.toUpperCase());
@@ -198,17 +218,22 @@ public class BookingServiceImpl implements BookingService {
         if (bookingStatus == BookingStatus.COMPLETED || bookingStatus == BookingStatus.CANCELLED) {
             Ambulance ambulance = booking.getAmbulance();
             if (ambulance != null) {
+                System.out.println("Freeing up ambulance " + ambulance.getAmbulanceNumber() + " as booking is " + bookingStatus);
                 ambulance.setStatus(AmbulanceStatus.AVAILABLE);
                 ambulanceDao.save(ambulance);
             }
         }
         
         Booking updatedBooking = bookingDao.save(booking);
+        System.out.println("Booking status updated successfully to: " + updatedBooking.getBookingStatus());
+        
         return modelMapper.map(updatedBooking, BookingRespDTO.class);
     }
     
     @Override
     public BookingRespDTO submitFeedback(Long bookingId, Integer rating, String comments) {
+        System.out.println("Submitting feedback for booking ID: " + bookingId + ", Rating: " + rating);
+        
         // Get the booking
         Booking booking = bookingDao.findById(bookingId)
                 .orElseThrow(() -> new ResourceNotFoundException("Booking not found with ID " + bookingId));

@@ -37,14 +37,27 @@ public class AmbulanceServiceImpl implements AmbulanceService {
   
     
     public AmbulanceRespDTO addAmbulance(AmbulanceReqDTO dto) {
+        // Validate ambulance number uniqueness
         if (ambulanceDao.existsByAmbulanceNumber(dto.getAmbulanceNumber())) {
             throw new IllegalArgumentException("Ambulance number '" + dto.getAmbulanceNumber() + "' already exists.");
         }
+
+        // Check if driver is already assigned to another ambulance
+        if (ambulanceDao.existsByDriverId(dto.getDriverId())) {
+            Ambulance existingAmbulance = ambulanceDao.findByDriverId(dto.getDriverId()).get(0);
+            throw new IllegalArgumentException("Driver with ID " + dto.getDriverId() + 
+                " is already assigned to ambulance " + existingAmbulance.getAmbulanceNumber());
+        }
+
+        // Validate driver exists and has DRIVER role
+        User driver = userDao.findById(dto.getDriverId())
+                .orElseThrow(() -> new ResourceNotFoundException("Driver not found with ID: " + dto.getDriverId()));
 
         Ambulance ambulance = new Ambulance();
         ambulance.setAmbulanceNumber(dto.getAmbulanceNumber());
         ambulance.setType(dto.getType());
         ambulance.setStatus(dto.getStatus());
+        ambulance.setDriver(driver);
 
         // Create location only if coordinates are provided
         if (dto.getLatitude() != null && dto.getLongitude() != null) {
@@ -55,10 +68,6 @@ public class AmbulanceServiceImpl implements AmbulanceService {
             Location savedLocation = locationDao.save(location);
             ambulance.setCurrentLocation(savedLocation);
         }
-
-        User driver = userDao.findById(dto.getDriverId())
-                .orElseThrow(() -> new ResourceNotFoundException("Driver not found"));
-        ambulance.setDriver(driver);
 
        
         Organization org = organizationDao.findAll().stream().findFirst()

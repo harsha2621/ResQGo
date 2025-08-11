@@ -1,7 +1,7 @@
 package com.cdac.dto;
 
+import com.cdac.entities.BookingStatus;
 import com.cdac.entities.EmergencyType;
-import com.cdac.entities.Location;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -16,12 +16,23 @@ import lombok.Setter;
 public class BookingReqDTO {
 
     @NotNull(message = "Pickup location is required")
-    private Location pickupLocation;
+    private LocationReqDTO pickupLocation;
 
     @NotNull(message = "Drop location is required")
-    private Location dropLocation;
-    
+    private LocationReqDTO dropLocation;
+
     @NotNull(message = "Emergency type is required")
     private EmergencyType emergencyType;
+    
+    // Optional fields for update operations
+    private Long userId;
+    
+    private Long ambulanceId;
+    
+    private Long pickupLocationId;
+    
+    private Long dropLocationId;
+    
+    private BookingStatus bookingStatus;
 
 }

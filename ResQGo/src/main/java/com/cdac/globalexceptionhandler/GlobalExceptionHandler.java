@@ -65,18 +65,32 @@ public class GlobalExceptionHandler {
     {
         String message = "Duplicate entry or constraint violation";
         
+        // Log the full exception details first
+        logger.error("DataIntegrityViolationException occurred:");
+        logger.error("Full message: " + ex.getMessage());
+        if (ex.getCause() != null) {
+            logger.error("Root cause: " + ex.getCause().getMessage());
+        }
+        
         // Extract more specific error message from the exception
         if (ex.getMessage() != null) {
             if (ex.getMessage().contains("users.email")) {
                 message = "This email is already registered. Please use a different email.";
             } else if (ex.getMessage().contains("users.aadhaar_no")) {
                 message = "This Aadhaar number is already registered.";
+            } else if (ex.getMessage().contains("ambulance_number")) {
+                message = "This ambulance number is already registered.";
+            } else if (ex.getMessage().contains("driver_id")) {
+                message = "This driver is already assigned to another ambulance.";
             } else if (ex.getMessage().contains("Duplicate entry")) {
                 message = "This information is already registered in the system.";
+            } else if (ex.getMessage().contains("fk_ambulance_driver")) {
+                message = "This driver is already assigned to another ambulance.";
+            } else if (ex.getMessage().contains("fk_ambulance_location")) {
+                message = "Location constraint violation.";
             }
         }
         
-        logger.error("DataIntegrityViolationException: " + ex.getMessage());
         return buildResponse(HttpStatus.CONFLICT, message, request);
     }
 

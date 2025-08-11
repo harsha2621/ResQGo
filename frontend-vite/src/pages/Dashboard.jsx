@@ -38,7 +38,7 @@ export default function Dashboard() {
     if (storedUser) {
       const userData = JSON.parse(storedUser);
       if (userData.role !== "user") {
-        navigate("/admin");
+        navigate("/admin/dashboard");
         return;
       }
       setUser(userData);

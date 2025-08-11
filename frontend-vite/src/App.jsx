@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Hero from './components/layout/Hero';
+import LandingPage from './pages/LandingPage';
 import Dashboard from "./pages/Dashboard";
 import LoginForm from "./pages/LoginForm";
 import RegisterForm from "./pages/RegisterForm";
@@ -19,8 +19,8 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/hero" element={<Hero />} />
-        <Route path="/" element={<Dashboard />} />
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/login" element={<LoginForm />} />
         <Route path="/register" element={<RegisterForm />} />
         <Route path="/driver/register" element={<DriverRegisterForm />} />
@@ -31,7 +31,7 @@ function App() {
         <Route path="/admin/manage-ambulance" element={<AmbulanceForm />} />
         <Route path="/admin/users" element={<UserForm />} />
         <Route path="/admin/bookings" element={<AdminBookings />} />
-         <Route path="/dashboard" element={<UserDashboard />} />
+         <Route path="/user/dashboard" element={<UserDashboard />} />
          <Route path="/booking/new" element={<BookingForm />} />
         
        
